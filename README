@@ -1,0 +1,40 @@
+IRB session after the project was built, and the database populated:
+
+**NOTE:** the `lib/tasks/populator.rake` file contains a bug that you won't want to use in your project, just FYI.
+
+irb(main):002:0> Vendor.count
+   (0.1ms)  SELECT COUNT(*) FROM "vendors" 
+=> 50
+irb(main):003:0> Item.count
+   (0.1ms)  SELECT COUNT(*) FROM "items" 
+=> 500
+irb(main):004:0> Vendor.first.id
+  Vendor Load (0.2ms)  SELECT "vendors".* FROM "vendors" LIMIT 1
+=> 1
+irb(main):005:0> Vendor.last.id
+  Vendor Load (0.2ms)  SELECT "vendors".* FROM "vendors" ORDER BY "vendors"."id" DESC LIMIT 1
+=> 50
+irb(main):006:0> Item.first.seller
+  Item Load (0.2ms)  SELECT "items".* FROM "items" LIMIT 1
+  Vendor Load (0.2ms)  SELECT "vendors".* FROM "vendors" WHERE "vendors"."id" = 36 LIMIT 1
+=> #<Vendor id: 36, name: "voluptatum soluta", website: "hartmannmckenzie.org", abbr: "PQR">
+irb(main):007:0> Item.first.seller.name
+  Item Load (0.2ms)  SELECT "items".* FROM "items" LIMIT 1
+  Vendor Load (0.2ms)  SELECT "vendors".* FROM "vendors" WHERE "vendors"."id" = 36 LIMIT 1
+=> "voluptatum soluta"
+irb(main):008:0> Item.first.manufacturer.name
+  Item Load (0.2ms)  SELECT "items".* FROM "items" LIMIT 1
+  Vendor Load (0.2ms)  SELECT "vendors".* FROM "vendors" WHERE "vendors"."id" = 7 LIMIT 1
+=> "eius perspiciatis deleniti"
+irb(main):009:0> items_whose_seller_is_the_same_as_manufacturer = Item.where("manufacturer_id == seller_id")
+  Item Load (0.4ms)  SELECT "items".* FROM "items" WHERE (manufacturer_id == seller_id)
+=> [#<Item id: 12, seller_id: 6, manufacturer_id: 6, name: "magni exercitationem quo tenetur sed">, #<Item id: 25, seller_id: 14, manufacturer_id: 14, name: "et autem molestiae">, #<Item id: 79, seller_id: 34, manufacturer_id: 34, name: "debitis rem omnis dignissimos eveniet">, #<Item id: 96, seller_id: 14, manufacturer_id: 14, name: "doloribus esse et">, #<Item id: 161, seller_id: 46, manufacturer_id: 46, name: "dolorem dignissimos non">, #<Item id: 167, seller_id: 6, manufacturer_id: 6, name: "quia qui quod id">, #<Item id: 209, seller_id: 26, manufacturer_id: 26, name: "eos non iusto">, #<Item id: 220, seller_id: 8, manufacturer_id: 8, name: "numquam ipsa quod id">, #<Item id: 302, seller_id: 44, manufacturer_id: 44, name: "ea vero sunt quaerat">, #<Item id: 319, seller_id: 19, manufacturer_id: 19, name: "est nisi adipisci sed corporis">, #<Item id: 409, seller_id: 34, manufacturer_id: 34, name: "sunt optio eveniet">, #<Item id: 411, seller_id: 2, manufacturer_id: 2, name: "a atque sit">]
+irb(main):010:0> items_whose_seller_is_the_same_as_manufacturer.count
+   (0.4ms)  SELECT COUNT(*) FROM "items" WHERE (manufacturer_id == seller_id)
+=> 12
+irb(main):011:0> items_whose_seller_is_the_same_as_manufacturer.first.seller.name
+  Vendor Load (0.2ms)  SELECT "vendors".* FROM "vendors" WHERE "vendors"."id" = 6 LIMIT 1
+=> "eos quo"
+irb(main):012:0> items_whose_seller_is_the_same_as_manufacturer.first.manufacturer.name
+  Vendor Load (0.2ms)  SELECT "vendors".* FROM "vendors" WHERE "vendors"."id" = 6 LIMIT 1
+=> "eos quo"
