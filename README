@@ -2,6 +2,8 @@ IRB session after the project was built, and the database populated:
 
 **NOTE:** the `lib/tasks/populator.rake` file contains a bug that you won't want to use in your project, just FYI.
 
+# Test of referencing `seller` and `manufacturer` from the `Item` class
+
 irb(main):002:0> Vendor.count
    (0.1ms)  SELECT COUNT(*) FROM "vendors" 
 => 50
@@ -36,5 +38,26 @@ irb(main):011:0> items_whose_seller_is_the_same_as_manufacturer.first.seller.nam
   Vendor Load (0.2ms)  SELECT "vendors".* FROM "vendors" WHERE "vendors"."id" = 6 LIMIT 1
 => "eos quo"
 irb(main):012:0> items_whose_seller_is_the_same_as_manufacturer.first.manufacturer.name
+  Vendor Load (0.2ms)  SELECT "vendors".* FROM "vendors" WHERE "vendors"."id" = 6 LIMIT 1
+=> "eos quo"
+
+
+# Test of accessing `sold_items` and `manufactured_items` from the `Vendor` class
+# You can even do round-trip references like `Vendor.first.sold_items.first.manufacturer.name` = AWESOME!
+
+irb(main):004:0> v = Vendor.first
+  Vendor Load (0.1ms)  SELECT "vendors".* FROM "vendors" LIMIT 1
+=> #<Vendor id: 1, name: "voluptas aliquid rem", website: "hintzjakubowski.com", abbr: "DEF">
+irb(main):005:0> v.sold_items.count
+   (0.3ms)  SELECT COUNT(*) FROM "items" WHERE "items"."seller_id" = 1
+=> 12
+irb(main):006:0> v.manufactured_items.count
+   (0.3ms)  SELECT COUNT(*) FROM "items" WHERE "items"."manufacturer_id" = 1
+=> 11
+irb(main):007:0> v.manufactured_items.first.name
+  Item Load (0.2ms)  SELECT "items".* FROM "items" WHERE "items"."manufacturer_id" = 1 LIMIT 1
+=> "voluptatem eum voluptatibus"
+irb(main):008:0> v.manufactured_items.first.seller.name
+  Item Load (0.2ms)  SELECT "items".* FROM "items" WHERE "items"."manufacturer_id" = 1 LIMIT 1
   Vendor Load (0.2ms)  SELECT "vendors".* FROM "vendors" WHERE "vendors"."id" = 6 LIMIT 1
 => "eos quo"
